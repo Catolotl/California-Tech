@@ -94,7 +94,7 @@
     
             // SHOPPING LIST FUNCTIONALITY
             else if (userInput.includes("what is on my shopping list")) {
-                responseDiv.textContent = shoppingList.length > 0 ? `Your shopping list: ${shoppingList.join(", ")}` : "Your shopping list is empty.";
+                responseDiv.textContent = shoppingList.length > 0 ? `Here is your shopping list: ${shoppingList.join(", ")}` : "Your shopping list is empty.";
                 speak(responseDiv.textContent);
             } 
             else if (userInput.startsWith("add ") && userInput.includes(" to my shopping list")) {
