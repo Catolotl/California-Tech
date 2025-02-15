@@ -25,197 +25,238 @@
   </div>
 
   <script>
-    // Echo AI Full Features (Now Always Listening for "Hey Echo")
-    
-    const responses = {
-        "wake up": "Hello!",
-        "what is your name": "My name is Echo, your virtual assistant.",
-        "how are you": "I’m just a program, but I’m always running smoothly!",
-        "tell me a joke": "Why did the computer go to the doctor? It had a virus!",
-        "goodbye": "Goodbye! Have a great day!",
-        "what time is it": () => new Date().toLocaleTimeString(),
-        "what is today's date": () => new Date().toLocaleDateString(),
-        "good morning": "Good morning! Have a fantastic day ahead!",
-        "good night": "Good night! Sleep tight!",
-        "can you help me": "Of course! Let me know what you need help with!",
-        "hi": "Hello! How can I assist you?",
-        "hello": "Hello! How can I assist you?",
-        "write a poem about a person dreaming": "Ok! Here is a poem about a person dreaming. A road unwinds beneath the stars, A path that whispers, near and far. Each step a dream, each breath a prayer, The journey calls, with skies so fair...              Through mountains tall, through valleys deep, The dreamer's heart will never sleep. For in the night, a light will shine, Guiding the soul, through space and time."
-    };
-    
-    // Timer, Shopping List, Reminders
-    let timerDuration = 0;
-    let timerRemaining = 0;
-    let timerId = null;
-    let shoppingList = [];
-    let reminders = [];
-    let isListening = false;
-    
-    // Handles both typed and spoken commands
-    function processCommand(userInput = null) {
-        const inputField = document.getElementById("inputField");
-        const responseDiv = document.getElementById("response");
-    
-        if (!userInput) {
-            userInput = inputField.value.trim().toLowerCase();
-            inputField.value = ""; // Clear field after submitting
-        }
-    
-        if (!userInput) {
-            responseDiv.textContent = "Please enter a command.";
-            speak("Please enter a command.");
-            return;
-        }
-    
-        responseDiv.textContent = "..."; // Show "thinking" effect
-        setTimeout(() => { // Delay response for realism
-    
-            if (responses[userInput]) {
-                responseDiv.textContent = `Echo: ${responses[userInput]}`;
-                speak(responses[userInput]);
-            }
-    
-            // TIMER FUNCTIONALITY
-            else if (userInput.includes("set a timer")) {
-                const timeMatch = userInput.match(/(\d+)\s*(minute|second)s?/);
-                if (timeMatch) {
-                    const value = parseInt(timeMatch[1], 10);
-                    const unit = timeMatch[2];
-                    timerDuration = unit === "minute" ? value * 60 : value;
-                    timerRemaining = timerDuration;
-                    startTimer();
-                    responseDiv.textContent = `Timer set for ${value} ${unit}(s).`;
-                    speak(`Timer set for ${value} ${unit}(s).`);
-                } else {
-                    responseDiv.textContent = "Please specify a valid time (minutes or seconds).";
-                    speak("Please specify a valid time (minutes or seconds).");
-                }
-            }
-    
-            // SHOPPING LIST FUNCTIONALITY
-            else if (userInput.includes("what is on my shopping list")) {
-                responseDiv.textContent = shoppingList.length > 0 ? `Here is your shopping list: ${shoppingList.join(", ")}` : "Your shopping list is empty.";
-                speak(responseDiv.textContent);
-            } 
-            else if (userInput.startsWith("add ") && userInput.includes(" to my shopping list")) {
-                const item = userInput.replace("add ", "").replace(" to my shopping list", "").trim();
-                shoppingList.push(item);
-                responseDiv.textContent = `Added "${item}" to your shopping list.`;
-                speak(`Added "${item}" to your shopping list.`);
-            } 
-            else if (userInput.startsWith("remove ") && userInput.includes(" from my shopping list")) {
-                const item = userInput.replace("remove ", "").replace(" from my shopping list", "").trim();
-                const index = shoppingList.indexOf(item);
-                if (index !== -1) {
-                    shoppingList.splice(index, 1);
-                    responseDiv.textContent = `Removed "${item}" from your shopping list.`;
-                    speak(`Removed "${item}" from your shopping list.`);
-                } else {
-                    responseDiv.textContent = `"${item}" is not on your shopping list.`;
-                    speak(`"${item}" is not on your shopping list.`);
-                }
-            }
-    
-            // REMINDERS FUNCTIONALITY
-            else if (userInput.includes("what are my reminders")) {
-                responseDiv.textContent = reminders.length > 0 ? `Your reminders: ${reminders.join(", ")}` : "You have no reminders.";
-                speak(responseDiv.textContent);
-            } 
-            else if (userInput.startsWith("add ") && userInput.includes(" to my reminders")) {
-                const reminder = userInput.replace("add ", "").replace(" to my reminders", "").trim();
-                reminders.push(reminder);
-                responseDiv.textContent = `Added "${reminder}" to your reminders.`;
-                speak(`Added "${reminder}" to your reminders.`);
-            } 
-            else if (userInput.startsWith("remove ") && userInput.includes(" from my reminders")) {
-                const reminder = userInput.replace("remove ", "").replace(" from my reminders", "").trim();
-                const index = reminders.indexOf(reminder);
-                if (index !== -1) {
-                    reminders.splice(index, 1);
-                    responseDiv.textContent = `Removed "${reminder}" from your reminders.`;
-                    speak(`Removed "${reminder}" from your reminders.`);
-                } else {
-                    responseDiv.textContent = `"${reminder}" is not in your reminders.`;
-                    speak(`"${reminder}" is not in your reminders.`);
-                }
-            }
-    
-            // UNKNOWN COMMAND HANDLING
-            else {
-                responseDiv.textContent = "Sorry, I didn't understand that command.";
-                speak("Sorry, I didn't understand that.");
-            }
-        }, 800); // Delay response by 800ms for realism
+// Echo AI Full Features (Now Always Listening for "Hey Echo")
+
+const responses = {
+    "wake up": "Hello!",
+    "what is your name": "My name is Echo, your virtual assistant.",
+    "how are you": "I’m just a program, but I’m always running smoothly!",
+    "tell me a joke": "Why did the computer go to the doctor? It had a virus!",
+    "goodbye": "Goodbye! Have a great day!",
+    "what time is it": () => new Date().toLocaleTimeString(),
+    "what is today's date": () => new Date().toLocaleDateString(),
+    "good morning": "Good morning! Have a fantastic day ahead!",
+    "good night": "Good night! Sleep tight!",
+    "can you help me": "Of course! Let me know what you need help with!",
+    "hi": "Hello! How can I assist you?",
+    "hello": "Hello! How can I assist you?",
+    "write a poem": `Ok! Here is a poem about a person dreaming:  
+    A road unwinds beneath the stars,  
+    A path that whispers, near and far.  
+    Each step a dream, each breath a prayer,  
+    The journey calls, with skies so fair...  
+    Through mountains tall, through valleys deep,  
+    The dreamer's heart will never sleep.  
+    For in the night, a light will shine,  
+    Guiding the soul, through space and time.`,
+    "who won the super bowl": "The Eagles overcame the Chiefs in Super Bowl 59 by a score of 40 to 22 on a Sunday.",
+    "idk":"I am sorry you feel stuck. If you need help brainstorming, just ask!"
+};
+
+// Timer, Shopping List, Reminders
+let timerDuration = 0;
+let timerRemaining = 0;
+let timerId = null;
+let shoppingList = [];
+let reminders = [];
+let isListening = false;
+
+// Handles both typed and spoken commands
+function processCommand(userInput = null) {
+    const inputField = document.getElementById("inputField");
+    const responseDiv = document.getElementById("response");
+
+    if (!userInput) {
+        userInput = inputField.value.trim().toLowerCase();
+        inputField.value = ""; // Clear field after submitting
     }
-    
-    // Timer Functionality
-    function startTimer() {
-        if (timerId) clearInterval(timerId);
-        timerId = setInterval(() => {
-            if (timerRemaining > 0) {
-                timerRemaining--;
-                document.getElementById("timerDisplay").textContent = `Time left: ${Math.floor(timerRemaining / 60)} minutes and ${timerRemaining % 60} seconds`;
+
+    if (!userInput) {
+        responseDiv.textContent = "Please enter a command.";
+        speak("Please enter a command.");
+        return;
+    }
+
+
+
+
+
+let isSearching = false; // Change this to true when searching the web
+
+function updateStatus() {
+    responseDiv.textContent = isSearching ? "Searching the web..." : "Thinking...";
+}
+
+function endStatus() {
+    responseDiv.textContent = "Say 'Hey Echo' or type a command.";
+}
+
+// Generate a random number between 1 and 2
+function getRandomStatus() {
+    return Math.floor(Math.random() * 2) + 1; // Returns 1 or 2
+}
+
+// Example usage
+const randomStatus = getRandomStatus();
+
+if (randomStatus === 1) {
+    isSearching = false; // Thinking
+} else {
+    isSearching = true; // Searching the web
+}
+
+updateStatus();
+
+setTimeout(() => {
+    isSearching = false; // After done "thinking" or "searching"
+    endStatus();
+}, 8000); // Simulate a delay
+
+
+
+
+
+
+    setTimeout(() => { // Delay response for realism
+        if (responses[userInput]) {
+            responseDiv.textContent = `${typeof responses[userInput] === 'function' ? responses[userInput]() : responses[userInput]}`;
+            speak(responseDiv.textContent);
+        }
+
+        // TIMER FUNCTIONALITY
+        else if (userInput.includes("set a timer")) {
+            const timeMatch = userInput.match(/(\d+)\s*(minute|second)s?/);
+            if (timeMatch) {
+                const value = parseInt(timeMatch[1], 10);
+                const unit = timeMatch[2];
+                timerDuration = unit === "minute" ? value * 60 : value;
+                timerRemaining = timerDuration;
+                startTimer();
+                responseDiv.textContent = `Timer set for ${value} ${unit}(s).`;
+                speak(responseDiv.textContent);
             } else {
-                clearInterval(timerId);
-                timerId = null;
-                document.getElementById("timerDisplay").textContent = "Timer finished!";
-                speak("Time's up!");
+                responseDiv.textContent = "Please specify a valid time (minutes or seconds).";
+                speak(responseDiv.textContent);
             }
-        }, 1000);
-    }
-    
-    // British Male Voice Output
-    function speak(text) {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = "en-GB";
-        utterance.pitch = 1;
-        utterance.rate = 1;
-        
-        const voices = speechSynthesis.getVoices();
-        const britishMaleVoice = voices.find(voice => voice.name.includes("Google UK English Male") || voice.name.includes("UK English Male"));
-        if (britishMaleVoice) {
-            utterance.voice = britishMaleVoice;
         }
-        
-        speechSynthesis.speak(utterance);
-    }
-    
-    // Speech Recognition Always Listening for "Hey Echo"
-    let recognition;
-    function startSpeechRecognition() {
-        if (!recognition) {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            recognition = new SpeechRecognition();
-            recognition.lang = "en-GB";
-            recognition.continuous = true;
-    
-            recognition.onresult = (event) => {
-                const spokenText = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
-                console.log("Heard:", spokenText);
-    
-                if (!isListening && (spokenText.includes("hey echo") || spokenText === "echo")) {
-                    isListening = true;
-                    speak("I'm listening.");
-                } else if (isListening) {
-                    processCommand(spokenText);
-                    isListening = false;
-                }
-            };
-    
-            recognition.onerror = (event) => {
-                console.error("Speech recognition error:", event.error);
-            };
+
+        // SHOPPING LIST FUNCTIONALITY
+        else if (userInput.includes("what is on my shopping list")) {
+            responseDiv.textContent = shoppingList.length > 0 ? `Your shopping list: ${shoppingList.join(", ")}` : "Your shopping list is empty.";
+            speak(responseDiv.textContent);
+        } 
+        else if (userInput.startsWith("add ") && userInput.includes(" to my shopping list")) {
+            const item = userInput.replace("add ", "").replace(" to my shopping list", "").trim();
+            shoppingList.push(item);
+            responseDiv.textContent = `Added "${item}" to your shopping list.`;
+            speak(responseDiv.textContent);
+        } 
+        else if (userInput.startsWith("remove ") && userInput.includes(" from my shopping list")) {
+            const item = userInput.replace("remove ", "").replace(" from my shopping list", "").trim();
+            const index = shoppingList.indexOf(item);
+            if (index !== -1) {
+                shoppingList.splice(index, 1);
+                responseDiv.textContent = `Removed "${item}" from your shopping list.`;
+                speak(responseDiv.textContent);
+            } else {
+                responseDiv.textContent = `"${item}" is not on your shopping list.`;
+                speak(responseDiv.textContent);
+            }
         }
+
+// MUSIC FUNCTIONALITY
+else if (userInput.startsWith("play ") && userInput.includes(" the song")) {
+    const song = userInput.replace("play ", "").replace("the song", "").trim();
+    reminders.push(song);
+    responseDiv.textContent = `I cannot play the song "${song}" at the moment. Please upgrade to Echo+ for a better user experience`;
+    speak(`I cannot play the song "${song}" at the moment. Please upgrade to Echo+ for a better user experience`);
+}
+
+
+        // UNKNOWN COMMAND HANDLING
+        else {
+            responseDiv.textContent = "Sorry, I didn't understand that command.";
+            speak(responseDiv.textContent);
+        }
+
+        resetToPrompt();
+    }, 800); // Delay response by 800ms for realism
+}
+
+// Resets to default prompt after a short delay
+function resetToPrompt() {
+    setTimeout(() => {
+        document.getElementById("response").textContent = "Say 'Hey Echo' or type a command";
+    }, 2000);
+}
+
+// Timer Functionality
+function startTimer() {
+    if (timerId) clearInterval(timerId);
+    timerId = setInterval(() => {
+        if (timerRemaining > 0) {
+            timerRemaining--;
+            document.getElementById("timerDisplay").textContent = `Time left: ${Math.floor(timerRemaining / 60)} minutes and ${timerRemaining % 60} seconds`;
+        } else {
+            clearInterval(timerId);
+            timerId = null;
+            document.getElementById("timerDisplay").textContent = "Timer finished!";
+            speak("Time's up!");
+        }
+    }, 1000);
+}
+
+// British Male Voice Output
+function speak(text) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-GB";
+    utterance.pitch = 1;
+    utterance.rate = 1;
     
-        recognition.start();
+    const voices = speechSynthesis.getVoices();
+    const britishMaleVoice = voices.find(voice => voice.name.includes("Google UK English Male") || voice.name.includes("UK English Male"));
+    if (britishMaleVoice) {
+        utterance.voice = britishMaleVoice;
     }
     
-    // Automatically request microphone permission and start listening
-    navigator.mediaDevices.getUserMedia({ audio: true })
-        .then(() => startSpeechRecognition())
-        .catch((error) => console.error("Microphone access denied:", error));
-    
+    speechSynthesis.speak(utterance);
+}
+
+// Speech Recognition Always Listening for "Hey Echo"
+let recognition;
+function startSpeechRecognition() {
+    if (!recognition) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = "en-GB";
+        recognition.continuous = true;
+
+        recognition.onresult = (event) => {
+            const spokenText = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
+            console.log("Heard:", spokenText);
+
+            if (!isListening && (spokenText.includes("hey echo") || spokenText === "echo")) {
+                isListening = true;
+                speak("I'm listening.");
+            } else if (isListening) {
+                processCommand(spokenText);
+                isListening = false;
+            }
+        };
+
+        recognition.onerror = (event) => {
+            console.error("Speech recognition error:", event.error);
+        };
+    }
+
+    recognition.start();
+}
+
+// Automatically request microphone permission and start listening
+navigator.mediaDevices.getUserMedia({ audio: true })
+    .then(() => startSpeechRecognition())
+    .catch((error) => console.error("Microphone access denied:", error));
+
     </script>
-    
 </body>
 </html>
