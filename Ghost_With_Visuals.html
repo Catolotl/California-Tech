@@ -27,38 +27,167 @@
   <script>
 // Echo AI Full Features (Now Always Listening for "Hey Echo")
 
+//Loaded Nerouns From Back End
+var time = () => new Date().toLocaleTimeString();
+
+var date = () => new Date().toLocaleDateString();
+
+var link = "";
+
 const responses = {
-    "wake up": "Hello!",
-    "what is your name": "My name is Echo, your virtual assistant.",
-    "how are you": "I’m just a program, but I’m always running smoothly!",
-    "tell me a joke": "Why did the computer go to the doctor? It had a virus!",
-    "goodbye": "Goodbye! Have a great day!",
-    "what time is it": () => new Date().toLocaleTimeString(),
-    "what is today's date": () => new Date().toLocaleDateString(),
-    "good morning": "Good morning! Have a fantastic day ahead!",
-    "good night": "Good night! Sleep tight!",
-    "can you help me": "Of course! Let me know what you need help with!",
-    "hi": "Hello! How can I assist you?",
-    "hello": "Hello! How can I assist you?",
-    "write a poem": `Ok! Here is a poem about a person dreaming:  
-    A road unwinds beneath the stars,  
-    A path that whispers, near and far.  
-    Each step a dream, each breath a prayer,  
-    The journey calls, with skies so fair...  
-    Through mountains tall, through valleys deep,  
-    The dreamer's heart will never sleep.  
-    For in the night, a light will shine,  
-    Guiding the soul, through space and time.`,
-    "who won the super bowl": "The Eagles overcame the Chiefs in Super Bowl 59 by a score of 40 to 22 on Sunday, feb. 9, 2025",
-    "idk":"I am sorry you feel stuck. If you need help brainstorming, just ask!"
+
+"test": "Echo AI 2025.",
+"reboot": "Echo AI 2025.",
+"start": "Thank you for using Echo AI! To start, say 'Hey Echo' to ask questions. If I don't know the answer to something, not to fear! Every question you ask helps me learn. Together, we can have a brighter tomorrow!",
+
+// Basic Responses
+"what is echo": "Echo is an all-purpose AI assistant made to help you with almost anything!",
+"what is echo+": "Echo Plus will be an all-purpose AGI assistant that will help you around the house with everyday chores, including reading emails, playing music, sports event updates, and weather!",
+"wake up": "Hello!",
+"what is your name": "My name is Echo, your virtual assistant.",
+"how are you": "I’m just a program, but I’m always running smoothly!",
+"tell me a joke": "Why did the computer go to the doctor? It had a virus!",
+"goodbye": "Goodbye! Have a great day!",
+"what time is it": time,
+"what is today's date": date,
+"good morning": "Good morning! Have a fantastic day ahead!",
+"good night": "Good night! Sleep tight!",
+"can you help me": "Of course! Let me know what you need help with!",
+"hi": "Hello! How can I assist you?",
+"hello": "Hello! How can I assist you?",
+
+// Literary Neurons
+"write a poem": `Ok! Here is a poem about a person dreaming:  
+A road unwinds beneath the stars,  
+A path that whispers, near and far.  
+Each step a dream, each breath a prayer,  
+The journey calls, with skies so fair...  
+Through mountains tall, through valleys deep,  
+The dreamer's heart will never sleep.  
+For in the night, a light will shine,  
+Guiding the soul, through space and time.`,
+
+// General Use Neurons
+"who won the super bowl": "The Eagles overcame the Chiefs in Super Bowl 59 by a score of 40 to 22 on Sunday, Feb. 9, 2025. This was found on the N F L website",
+"idk": "I am sorry you feel stuck. If you need help brainstorming, just ask!",
+"what is the weather like today": "Please upgrade to Echo+ to ask general questions, but it is never a bad idea to check for yourself!",
+"what is your favorite song": "There are so many, but I might have to choose 'We Are Young' by Fun. I find the contrast between catchy beats and silly lyrics really good together.",
+"who is the president of the united states": "The president of the United States as of the 2024 election is Donald (John) Trump, the 47th president.",
+"what is your favorite show": "I don't have a favorite show or movie, but I enjoy the idea of a biased dictator country that started a secret game to impress VIPs of the Squid Games. This answer was found on the Squid Games Fandom.",
+"what squid game guard shape do you like most": "I think the circle guards are the cutest and have no bad intentions.",
+
+
+//All OF THE FOLLOWING NEURONS CAME FROM [...Server.py] A BACKEND THAT WAS MADE TO SOURSE INFORMATION FROM THE INTERNET. ALL ACCOUNTS USED TO SOURSE DATA HAVE BEEN REMOVED AND ALL DATA HAS BEEN REMOVED FROM THE PUBLIC DATA BASES ON FIRE FOX, CHROME, SAFARI AND MORE.
+// Science & Space
+"what's the biggest planet in our solar system": "The biggest planet is Jupiter! It's so large that you could fit all of the other planets inside it!",
+"how many continents are there": "There are seven continents: Africa, Antarctica, Asia, Europe, North America, Australia, and South America.",
+"who invented the light bulb": "Thomas Edison is credited with inventing the practical light bulb, though others like Nikola Tesla contributed to its development!",
+"what's the fastest animal in the world": "The fastest animal is the peregrine falcon, which can dive at speeds of over 240 miles per hour!",
+"how old is the earth": "The Earth is about 4.5 billion years old. That's a really long time!",
+"what is photosynthesis": "Photosynthesis is the process by which plants turn sunlight into food, using water and carbon dioxide!",
+"how does a rainbow form": "A rainbow forms when light is bent (or refracted) through water droplets in the air, creating a spectrum of colors!",
+"what is the moon made of": "The moon is made of rock and dust, and it has mountains, valleys, and large craters formed by impacts from space!",
+"how many bones are in the human body": "An adult human has 206 bones!",
+"what causes tides in the ocean": "Tides are caused by the gravitational pull of the Moon and the Sun on Earth's oceans.",
+"how do airplanes fly": "Airplanes fly due to lift, created by the shape of their wings, which makes air pressure above the wing lower than below it.",
+"how do earthquakes happen": "Earthquakes happen when tectonic plates shift and release energy in the Earth's crust.",
+"what is a black hole": "A black hole is a region of space where gravity is so strong that nothing, not even light, can escape from it!",
+
+// History & Culture
+"who was the first president of the united states": "George Washington was the first president of the United States, serving from 1789 to 1797.",
+"when was the first moon landing": "The first moon landing happened on July 20, 1969, when Apollo 11 astronauts Neil Armstrong and Buzz Aldrin walked on the moon.",
+"what was the renaissance": "The Renaissance was a cultural movement in Europe from the 14th to the 17th century that saw a revival of art, literature, and science.",
+"who wrote the declaration of independence": "Thomas Jefferson was the primary author of the Declaration of Independence, which was adopted on July 4, 1776.",
+"who built the pyramids": "The ancient Egyptians built the pyramids as tombs for their pharaohs over 4,000 years ago.",
+"when was world war ii": "World War II lasted from 1939 to 1945 and involved many countries around the world.",
+"who discovered gravity": "Sir Isaac Newton is credited with discovering gravity when he observed an apple falling from a tree!",
+"who painted the mona lisa": "The Mona Lisa was painted by Leonardo da Vinci in the early 16th century.",
+"who was sherlock holmes": "Sherlock Holmes was a fictonal detective created by Sir Arthur Conan Doyle who lived in England and lived with his work parter, Watson. Together, they where an unstopable team who could solve any case.",
+
+// Fun & Trivia
+"what is the most popular sport in the world": "Soccer (football) is the most popular sport in the world, with billions of fans!",
+"how many colors are in a rainbow": "A rainbow has seven colors: Red, Orange, Yellow, Green, Blue, Indigo, and Violet!",
+"what's the tallest building in the world": "The tallest building in the world is the Burj Khalifa in Dubai, standing at 828 meters (2,717 feet) tall!",
+"how do you make slime": "Slime can be made by mixing glue with an activator like borax or contact lens solution!",
+"how many letters are in the alphabet": "The English alphabet has 26 letters.",
+"what is the hardest natural substance on earth": "Diamond is the hardest natural substance on Earth!",
+"who created Mickey Mouse": "Mickey Mouse was created by Walt Disney and first appeared in 'Steamboat Willie' in 1928.",
+"what is the most spoken language in the world": "Mandarin Chinese is the most spoken language in the world, with over a billion speakers!",
+"how many teeth does an adult human have": "An adult human has 32 teeth, including wisdom teeth!",
+
+// Additional Fun Facts
+"what is the capital of france": "The capital of France is Paris!",
+"how many stars are in the Milky Way": "The Milky Way has between 100 and 400 billion stars!",
+"why is the sky blue": "The sky appears blue because of the scattering of sunlight by the atmosphere, which makes blue light more visible to our eyes.",
+"what do bees do": "Bees pollinate flowers and make honey by collecting nectar!",
+
+// Science & Space
+"how big is the sun": "The Sun is about 109 times the diameter of Earth and could fit over a million Earths inside it!",
+"what is the hottest planet in the solar system": "Venus is the hottest planet, with surface temperatures reaching up to 900°F (475°C) due to its thick atmosphere!",
+"how far is the moon from Earth": "The Moon is about 238,855 miles (384,400 km) away from Earth.",
+"can humans live on Mars": "Not yet! But scientists are working on ways to make Mars habitable in the future.",
+"what is dark matter": "Dark matter is a mysterious substance that makes up most of the universe, but we can't see or directly detect it!",
+"how do volcanoes erupt": "Volcanoes erupt when molten rock (magma) from beneath Earth's crust rises and escapes through an opening.",
+    
+// Technology & Computers
+"who invented the internet": "The internet was developed by multiple researchers, but ARPANET, created in the late 1960s, is considered its foundation.",
+"what is artificial intelligence": "Artificial Intelligence (AI) is the simulation of human intelligence in computers that can learn and solve problems!",
+"what does a CPU do": "A CPU (Central Processing Unit) is the brain of a computer, processing instructions and performing calculations.",
+"what is a GPU": "A GPU (Graphics Processing Unit) is used for rendering images and accelerating computing tasks, especially in gaming and AI!",
+"how does WiFi work": "WiFi transmits data using radio waves, allowing devices to connect to the internet wirelessly!",
+"what does HTML stand for": "HTML stands for HyperText Markup Language, used to create web pages!",
+"what is a programming language": "A programming language is a set of instructions that tell a computer how to perform a task, like Python, Java, or C++!",
+    
+// Geography
+"what is the smallest country in the world": "Vatican City is the smallest country, covering just 0.49 square kilometers!",
+"what is the tallest mountain in the world": "Mount Everest is the tallest mountain, standing at 29,032 feet (8,849 meters).",
+"what is the longest river in the world": "The Nile River is the longest, stretching about 4,135 miles (6,650 km).",
+"which ocean is the largest": "The Pacific Ocean is the largest, covering about 63 million square miles!",
+"what is the capital of Japan": "The capital of Japan is Tokyo!",
+"what countries make up North America": "North America consists of Canada, the United States, Mexico, and many smaller countries in Central America and the Caribbean!",
+    
+// Animals
+"what is the smartest animal": "Dolphins, chimpanzees, and crows are considered among the smartest animals!",
+"what is the largest land animal": "The African elephant is the largest land animal, weighing up to 12,000 pounds!",
+"can penguins fly": "No, penguins can’t fly, but they are excellent swimmers!",
+"how do bees make honey": "Bees collect nectar from flowers, digest it, and store it in honeycombs where it turns into honey!",
+"do fish sleep": "Yes! Fish rest, but they don’t close their eyes since they don’t have eyelids.",
+    
+// History & Fun Facts
+"who was the first person in space": "Yuri Gagarin, a Soviet cosmonaut, was the first person in space in 1961.",
+"who discovered America": "Christopher Columbus is credited with discovering America in 1492, though Indigenous peoples had lived there for thousands of years!",
+"when was the first airplane flight": "The Wright brothers flew the first airplane on December 17, 1903!",
+"how many wonders of the world are there": "There are seven wonders of the ancient world and seven wonders of the modern world!",
+ 
+//Numbers and Math
+"what is pi": "Pi (π) is a mathematical constant that represents the ratio of a circle's circumference to its diameter, approximately 3.14159!",
+"what is the square root of 64": "The square root of 64 is 8!",
+"what is the largest prime number": "The largest known prime number is over 24 million digits long and was discovered using computing algorithms!",
+"how many zeros are in a billion": "A billion has nine zeros: 1,000,000,000!",
+    
+// Random Fun Facts
+"what is the most popular video game": "Minecraft is one of the best-selling video games of all time!",
+"how long is a year on Mars": "A year on Mars lasts about 687 Earth days!",
+"can you cry in space": "Yes, but tears don’t fall! They float in blobs because of zero gravity.",
+"what was the first movie ever made": "The first motion picture is considered to be 'Roundhay Garden Scene,' filmed in 1888!",
+"who invented LEGO": "LEGO was created by Ole Kirk Christiansen in Denmark in 1932.",
+"how many stars are there in the universe": "Scientists estimate there are about 200 billion trillion stars in the universe!",
+"what's the fastest roller coaster in the world": "The fastest roller coaster is Formula Rossa in Abu Dhabi, which reaches speeds of 149 mph (240 km/h)!",
+"how many languages are there in the world": "There are about 7,000 languages spoken in the world today!",
+"what is the rarest eye color": "Green is one of the rarest eye colors, found in only about 2% of the world's population!",
+"why do we dream": "Dreams occur during REM sleep and are thought to be the brain’s way of processing emotions and memories!",
+"how old is the oldest tree in the world": "The oldest known tree is a bristlecone pine in California, estimated to be over 4,800 years old!",
+
 };
 
-// Timer, Shopping List, Reminders
+// Timer, Shopping List, Reminders ect.
 let timerDuration = 0;
 let timerRemaining = 0;
 let timerId = null;
 let shoppingList = [];
 let reminders = [];
+let song = [];
+let direction = [];
 let isListening = false;
 
 // Handles both typed and spoken commands
@@ -165,17 +294,26 @@ setTimeout(() => {
         }
 
 // MUSIC FUNCTIONALITY
-else if (userInput.startsWith("play ") && userInput.includes(" the song")) {
-    const song = userInput.replace("play ", "").replace("the song", "").trim();
-    reminders.push(song);
+else if (userInput.startsWith("play ")) {
+    const song = userInput.replace("play ", "").trim();
+    song.push(song);
     responseDiv.textContent = `I cannot play the song "${song}" at the moment. Please upgrade to Echo+ for a better user experience`;
     speak(`I cannot play the song "${song}" at the moment. Please upgrade to Echo+ for a better user experience`);
+}
+
+// Link
+else if (userInput.startsWith("open ")) {
+    const link = userInput.replace("open ", "").trim();
+    direction = link;
+    window.open(`https://${link}.com`, '_blank'); // Opens in a new tab or window
+    responseDiv.textContent = `Opening ${link}`;
+    speak(`Opening "${link}" in Chrome`);
 }
 
 
         // UNKNOWN COMMAND HANDLING
         else {
-            responseDiv.textContent = "Sorry, I didn't understand that command.";
+            responseDiv.textContent = "Sorry, I didn't understand."; //SORRY TEXT
             speak(responseDiv.textContent);
         }
 
