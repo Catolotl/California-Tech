@@ -307,7 +307,7 @@ else if (userInput.startsWith("play ")) {
     const song = userInput.replace("play ", "").trim();
     song.push(song);
     responseDiv.textContent = `I cannot play the song "${song}" at the moment. Please upgrade to Echo+ for a better user experience`;
-    speak(`I cannot play the song "${song}" at the moment. Please upgrade to Echo+ for a better user experience`);
+    speak(`I cannot play the song "${song}" at the moment. Please upgrade to Echo plus for a better user experience`);
 }
 
 // Link
@@ -316,7 +316,7 @@ else if (userInput.startsWith("open ")) {
     direction = link;
     window.open(`https://${link}.com`, '_blank'); // Opens in a new tab or window
     responseDiv.textContent = `Opening ${link}`;
-    speak(`Opening "${link}" in Chrome`);
+    speak(`Opening "${link}.com" in Chrome`);
 }
 // say
 else if (userInput.startsWith("say ")) {
@@ -327,11 +327,21 @@ else if (userInput.startsWith("say ")) {
 }
 
 
-        // UNKNOWN COMMAND HANDLING
-        else {
-            responseDiv.textContent = "Sorry, I didn't understand."; //SORRY TEXT
-            speak(responseDiv.textContent);
-        }
+// UNKNOWN COMMAND HANDLING
+else {
+    const unknownResponses = [
+        "Sorry, I didn't understand.",
+        "Could you rephrase that?",
+        "I'm not sure what you mean.",
+        "Hmm, I don’t know that one.",
+        "Can you try saying it differently?"
+    ];
+    
+    const randomResponse = unknownResponses[Math.floor(Math.random() * unknownResponses.length)];
+    responseDiv.textContent = randomResponse; // Set random response
+    speak(responseDiv.textContent);
+}
+
 
         resetToPrompt();
     }, 800); // Delay response by 800ms for realism
@@ -378,37 +388,81 @@ function speak(text) {
 
 // Speech Recognition Always Listening for "Hey Echo"
 let recognition;
+
+async function initializeAudioWorklet(audioContext, stream) {
+    await audioContext.audioWorklet.addModule(URL.createObjectURL(new Blob([`
+        class NoOpProcessor extends AudioWorkletProcessor {
+            process(inputs, outputs, parameters) {
+                return true; // Keeps audio processing alive
+            }
+        }
+        registerProcessor('noop-processor', NoOpProcessor);
+    `], { type: "application/javascript" })));
+
+    const source = audioContext.createMediaStreamSource(stream);
+    const node = new AudioWorkletNode(audioContext, 'noop-processor');
+    source.connect(node);
+    node.connect(audioContext.destination);
+}
+
+function initializeRecognition() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    recognition.lang = "en-GB";
+    recognition.continuous = true;
+    recognition.interimResults = false;
+
+    recognition.onresult = (event) => {
+        const spokenText = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
+        console.log("Heard:", spokenText);
+
+        if (!isListening && (spokenText.includes("hey echo") || spokenText === "echo")) {
+            isListening = true;
+            speak("I'm listening.");
+        } else if (isListening) {
+            processCommand(spokenText);
+            isListening = false;
+        }
+    };
+
+    recognition.onerror = (event) => {
+        console.error("Speech recognition error:", event.error);
+        if (event.error !== "no-speech") {
+            restartRecognition();
+        }
+    };
+
+    recognition.onend = () => {
+        console.warn("Speech recognition stopped, restarting...");
+        restartRecognition();
+    };
+}
+
 function startSpeechRecognition() {
     if (!recognition) {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        recognition = new SpeechRecognition();
-        recognition.lang = "en-GB";
-        recognition.continuous = true;
-
-        recognition.onresult = (event) => {
-            const spokenText = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
-            console.log("Heard:", spokenText);
-
-            if (!isListening && (spokenText.includes("hey echo") || spokenText === "echo")) {
-                isListening = true;
-                speak("I'm listening.");
-            } else if (isListening) {
-                processCommand(spokenText);
-                isListening = false;
-            }
-        };
-
-        recognition.onerror = (event) => {
-            console.error("Speech recognition error:", event.error);
-        };
+        initializeRecognition();
     }
-
     recognition.start();
 }
 
-// Automatically request microphone permission and start listening
+function restartRecognition() {
+    if (recognition) {
+        setTimeout(() => {
+            console.log("Restarting recognition...");
+            recognition.start();
+        }, 1000); // Restart after 1s delay
+    }
+}
+
+// Keep the microphone open persistently with AudioWorklet
 navigator.mediaDevices.getUserMedia({ audio: true })
-    .then(() => startSpeechRecognition())
+    .then(async (stream) => {
+        console.log("Microphone access granted");
+        startSpeechRecognition();
+
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        await initializeAudioWorklet(audioContext, stream);
+    })
     .catch((error) => console.error("Microphone access denied:", error));
 
     </script>
