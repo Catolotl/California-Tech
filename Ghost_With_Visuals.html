@@ -252,6 +252,15 @@ setTimeout(() => {
             speak(responseDiv.textContent);
         }
 
+        // 
+else if (userInput.includes("hey echo ")) {
+    const link = userInput.replace("hey echo ", "").trim();
+    if (responses[link]) {
+            responseDiv.textContent = `${typeof responses[link] === 'function' ? responses[link]() : responses[link]}`;
+            speak(responseDiv.textContent);
+    }
+}
+
         // TIMER FUNCTIONALITY
         else if (userInput.includes("set a timer")) {
             const timeMatch = userInput.match(/(\d+)\s*(minute|second)s?/);
@@ -308,6 +317,13 @@ else if (userInput.startsWith("open ")) {
     window.open(`https://${link}.com`, '_blank'); // Opens in a new tab or window
     responseDiv.textContent = `Opening ${link}`;
     speak(`Opening "${link}" in Chrome`);
+}
+// say
+else if (userInput.startsWith("say ")) {
+    const say = userInput.replace("say ", "").trim();
+    direction = say;
+    responseDiv.textContent = `${say}`;
+    speak(`${say}`);
 }
 
 
