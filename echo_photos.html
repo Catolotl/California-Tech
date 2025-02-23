@@ -124,12 +124,12 @@
     <!-- Sidebar -->
     <div id="sidebar">
         <h2>Echo Photos</h2>
+        <input type="text" id="search" placeholder="Search by date or location">
         <button id="trash-button" onclick="viewTrash()">View Trash</button>
         <button id="restore-button" style="display:none" onclick="restoreImages()">Restore Images</button>
         <button id="exit-trash-button" style="display:none" onclick="exitTrash()">Exit Trash</button>
         <input type="file" id="file-input" multiple accept="image/*">
         <button onclick="startSlideshow()">Start Slideshow</button>
-        <input type="text" id="search" placeholder="Search by date or location">
     </div>
 
     <!-- Main Content Area -->
@@ -145,7 +145,6 @@
             <p id="preview-date"></p>
             <button onclick="grabImageUrl()">Grab URL</button>
             <button onclick="saveImageToDevice()">Save to Device</button>
-            <button onclick="deleteImage(event)">Delete</button>
         </div>
     </div>
 
