@@ -72,7 +72,7 @@
             <p id="preview-date"></p>
             <button onclick="grabImageUrl()">Grab URL</button>
             <button onclick="saveImageToDevice()">Save to Device</button>
-            <button onclick="deleteImage()">Delete</button>
+            <button onclick="deleteImage(event)">Delete</button>
         </div>
     </div>
 
@@ -115,44 +115,44 @@
             img.src = photo.src;
             img.classList.add('photo');
             img.onclick = function() {
-                openPreview(photo.src, photo.date, photo);
+                openPreview(photo.src, photo.date);
             };
 
             let dateLabel = document.createElement('span');
             dateLabel.classList.add('date-label');
             dateLabel.textContent = `Uploaded: ${photo.date}`;
 
+            let deleteButton = document.createElement('button');
+            deleteButton.textContent = "Delete";
+            deleteButton.onclick = function(event) {
+                deleteImage(event);
+            };
+
             container.appendChild(img);
             container.appendChild(dateLabel);
+            container.appendChild(deleteButton);
             document.getElementById('photo-gallery').appendChild(container);
         }
 
-        function deleteImage(photo) {
-            // Find the container element that holds the photo
-            let container = photo.closest('.photo-container');
+        function deleteImage(event) {
+            // Get the container (photo-container) from the button's parent
+            let container = event.target.closest('.photo-container');
             
             // Remove the container from the photo gallery
             if (container) {
                 container.remove();
+                
+                // Now update local storage
+                let imgSrc = container.querySelector('img').src;
+                photos = photos.filter(photo => photo.src !== imgSrc); // Remove photo from the array
+                saveToLocalStorage(); // Save updated photos to local storage
             }
-
-            // Remove the photo from the 'photos' array
-            photos = photos.filter(p => p.src !== photo.src);
-
-            // Save updated photos to local storage
-            saveToLocalStorage();
         }
 
-        function openPreview(src, date, photo) {
+        function openPreview(src, date) {
             document.getElementById('preview-img').src = src;
             document.getElementById('preview-date').textContent = `Uploaded: ${date}`;
             document.getElementById('preview-container').style.display = 'flex';
-
-            // Update the delete button to remove the correct image
-            document.querySelector('#preview-box button').onclick = function() {
-                deleteImage(photo);
-                closePreview(event); // Close the preview after deletion
-            };
         }
 
         function closePreview(event) {
@@ -181,7 +181,7 @@
             let index = 0;
             if (photos.length === 0) return;
             let slideshow = setInterval(() => {
-                openPreview(photos[index].src, photos[index].date, photos[index]);
+                openPreview(photos[index].src, photos[index].date);
                 index = (index + 1) % photos.length;
                 if (index === 0) clearInterval(slideshow);
             }, 2000);
