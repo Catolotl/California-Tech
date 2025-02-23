@@ -441,7 +441,7 @@ Guiding the soul, through space and time.`,
 "how would you describe frisk’s sound": "Frizk’s sound is atmospheric, dynamic, and experimental, blending electronic beats with evocative melodies and raw emotion.",
 "what's the best song by frisk": "It’s hard to choose just one, but 'Echo' and 'Forgotten Arcade' are definitely standout tracks that showcase their unique style.",
 "do you think frisk’s music is underrated": "Definitely! Frizk’s music deserves more recognition for its creativity and fresh approach to electronic pop.",
-"where can I listen to frisk's music": "You can find Frizk’s music on streaming platforms like Spotify, Apple Music, Youtube Music and SoundCloud!",
+"where can I listen to frisk's music": "You can find Frizk’s music on streaming platforms like Spotify, Apple Music, Youtube Music and even SoundCloud!",
 "what's your favorite frisk album": "Frizk’s album 'Forgotten Arcade' really stands out. It has such a cohesive, immersive feel to it!",
 
 //Squid Games
@@ -782,6 +782,19 @@ else if (userInput.startsWith("say ")) {
     speak(`${say}`);
 }
 
+// time
+else if (userInput.startsWith("what is the best time ")) {
+  var times = [
+    "The best time to head out today is 12:30 PM",
+    "The best time to head out today is 2:30 PM",
+    "The best time to get going is 1:45 PM",
+    "A good time to make your way out of the house is 6:30 PM",
+  ];
+  var q = times[Math.floor(Math.random() * times.length)];  // Fix the Math.random() call
+  responseDiv.textContent = `${q}`;
+  speak(`${q}`);
+}
+
 
 // UNKNOWN COMMAND HANDLING
 else {
@@ -790,7 +803,8 @@ else {
         "Could you rephrase that?",
         "I'm not sure what you mean.",
         "Hmm, I don’t know that one.",
-        "Can you try saying it differently?"
+        "Can you try saying it differently?",
+        "Excuse me, could you say that again?"
     ];
     
     const randomResponse = unknownResponses[Math.floor(Math.random() * unknownResponses.length)];
