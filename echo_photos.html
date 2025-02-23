@@ -72,6 +72,7 @@
             <p id="preview-date"></p>
             <button onclick="grabImageUrl()">Grab URL</button>
             <button onclick="saveImageToDevice()">Save to Device</button>
+            <button onclick="deleteImage()">Delete</button>
         </div>
     </div>
 
@@ -125,6 +126,17 @@
             container.appendChild(dateLabel);
             document.getElementById('photo-gallery').appendChild(container);
         }
+
+function deleteImage(photo) {
+    // Find the container element that holds the photo
+    let container = photo.closest('.photo-container');
+    
+    // Remove the container from the photo gallery
+    if (container) {
+        container.remove();
+    }
+}
+
 
         function openPreview(src, date) {
             document.getElementById('preview-img').src = src;
