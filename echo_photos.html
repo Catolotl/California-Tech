@@ -116,6 +116,16 @@
         #exit-trash-button:hover {
             background: darkred;
         }
+        #file-input {
+            background: red;
+            color: white;
+            padding: 5px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+        #file-input:hover {
+            background: darkred;
+        }
 
     </style>
 </head>
@@ -125,10 +135,10 @@
     <div id="sidebar">
         <h2>Echo Photos</h2>
         <input type="text" id="search" placeholder="Search by date or location">
+         <input type="file" id="file-input" multiple accept="image/*">
         <button id="trash-button" onclick="viewTrash()">View Trash</button>
         <button id="restore-button" style="display:none" onclick="restoreImages()">Restore Images</button>
         <button id="exit-trash-button" style="display:none" onclick="exitTrash()">Exit Trash</button>
-        <input type="file" id="file-input" multiple accept="image/*">
         <button onclick="startSlideshow()">Start Slideshow</button>
     </div>
 
