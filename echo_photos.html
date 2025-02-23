@@ -8,12 +8,14 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
+            display: flex;
         }
-        #photo-gallery {
+        #photo-gallery, #trash-gallery {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
             justify-content: center;
+            width: 50%;
         }
         .photo-container {
             position: relative;
@@ -54,17 +56,33 @@
         #search {
             margin: 10px;
         }
+        #trash-button, #restore-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: red;
+            color: white;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        #restore-button {
+            background: green;
+        }
     </style>
 </head>
 <body>
 
-    <h1>Echo Photos</h1>
-    
-    <input type="file" id="file-input" multiple accept="image/*">
-    <button onclick="startSlideshow()">Start Slideshow</button>
-    <input type="text" id="search" placeholder="Search by date or location">
-    
+    <div style="width: 50%; text-align: left; padding: 20px;">
+        <h1>Echo Photos</h1>
+        <button id="trash-button" onclick="viewTrash()">View Trash</button>
+        <button id="restore-button" style="display:none" onclick="restoreImages()">Restore Images</button>
+        <input type="file" id="file-input" multiple accept="image/*">
+        <button onclick="startSlideshow()">Start Slideshow</button>
+        <input type="text" id="search" placeholder="Search by date or location">
+    </div>
+
     <div id="photo-gallery"></div>
+    <div id="trash-gallery" style="display:none;"></div>
 
     <div id="preview-container" onclick="closePreview(event)">
         <div id="preview-box">
@@ -78,15 +96,23 @@
 
     <script>
         let photos = JSON.parse(localStorage.getItem('photos')) || [];
+        let trash = JSON.parse(localStorage.getItem('trash')) || [];
 
         function saveToLocalStorage() {
             localStorage.setItem('photos', JSON.stringify(photos));
+            localStorage.setItem('trash', JSON.stringify(trash));
         }
 
         function loadPhotos() {
             let gallery = document.getElementById('photo-gallery');
             gallery.innerHTML = '';
-            photos.forEach(photo => addPhotoToGallery(photo));
+            photos.forEach(photo => addPhotoToGallery(photo, 'photo-gallery'));
+        }
+
+        function loadTrash() {
+            let gallery = document.getElementById('trash-gallery');
+            gallery.innerHTML = '';
+            trash.forEach(photo => addPhotoToGallery(photo, 'trash-gallery'));
         }
 
         document.getElementById('file-input').addEventListener('change', function(event) {
@@ -101,13 +127,13 @@
                     };
                     photos.push(photoData);
                     saveToLocalStorage();
-                    addPhotoToGallery(photoData);
+                    addPhotoToGallery(photoData, 'photo-gallery');
                 };
                 reader.readAsDataURL(file);
             }
         });
 
-        function addPhotoToGallery(photo) {
+        function addPhotoToGallery(photo, galleryId) {
             let container = document.createElement('div');
             container.classList.add('photo-container');
 
@@ -125,28 +151,39 @@
             let deleteButton = document.createElement('button');
             deleteButton.textContent = "Delete";
             deleteButton.onclick = function(event) {
-                deleteImage(event);
+                deleteImage(event, photo, galleryId);
             };
 
             container.appendChild(img);
             container.appendChild(dateLabel);
             container.appendChild(deleteButton);
-            document.getElementById('photo-gallery').appendChild(container);
+            document.getElementById(galleryId).appendChild(container);
         }
 
-        function deleteImage(event) {
-            // Get the container (photo-container) from the button's parent
+        function deleteImage(event, photo, galleryId) {
             let container = event.target.closest('.photo-container');
-            
-            // Remove the container from the photo gallery
+            if (galleryId === 'photo-gallery') {
+                trash.push(photo); // Move to trash
+            } else {
+                trash = trash.filter(t => t.src !== photo.src); // Permanently delete from trash
+            }
+
+            // Remove photo from gallery and update local storage
             if (container) {
                 container.remove();
-                
-                // Now update local storage
-                let imgSrc = container.querySelector('img').src;
-                photos = photos.filter(photo => photo.src !== imgSrc); // Remove photo from the array
-                saveToLocalStorage(); // Save updated photos to local storage
+                if (galleryId === 'photo-gallery') {
+                    photos = photos.filter(p => p.src !== photo.src);
+                }
+                saveToLocalStorage();
             }
+        }
+
+        function restoreImages() {
+            photos.push(...trash);
+            trash = [];
+            saveToLocalStorage();
+            loadPhotos();
+            loadTrash();
         }
 
         function openPreview(src, date) {
@@ -187,12 +224,20 @@
             }, 2000);
         }
 
+        function viewTrash() {
+            document.getElementById('trash-button').style.display = 'none';
+            document.getElementById('restore-button').style.display = 'inline-block';
+            loadTrash();
+            document.getElementById('photo-gallery').style.display = 'none';
+            document.getElementById('trash-gallery').style.display = 'flex';
+        }
+
         document.getElementById('search').addEventListener('input', function() {
             let query = this.value.toLowerCase();
             let gallery = document.getElementById('photo-gallery');
             gallery.innerHTML = '';
             photos.filter(photo => photo.date.includes(query) || photo.location.toLowerCase().includes(query))
-                  .forEach(photo => addPhotoToGallery(photo));
+                  .forEach(photo => addPhotoToGallery(photo, 'photo-gallery'));
         });
 
         loadPhotos();
