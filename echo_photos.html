@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echo Photos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        #photo-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        .photo {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            cursor: pointer;
+        }
+        #preview {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+        }
+        #preview img {
+            max-width: 90vw;
+            max-height: 90vh;
+        }
+        #search {
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Echo Photos</h1>
+    
+    <input type="file" id="file-input" multiple accept="image/*">
+    <button onclick="startSlideshow()">Start Slideshow</button>
+    <input type="text" id="search" placeholder="Search by date or location">
+
+    <div id="photo-gallery"></div>
+
+    <div id="preview" onclick="closePreview()">
+        <img id="preview-img" src="" alt="Preview">
+    </div>
+
+    <script>
+        let photos = [];
+
+        document.getElementById('file-input').addEventListener('change', function(event) {
+            let files = event.target.files;
+            for (let file of files) {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    let img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.classList.add('photo');
+                    img.onclick = function() {
+                        openPreview(img.src);
+                    };
+                    document.getElementById('photo-gallery').appendChild(img);
+                    photos.push({ src: img.src, date: new Date().toLocaleDateString(), location: "Unknown" });
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function openPreview(src) {
+            document.getElementById('preview-img').src = src;
+            document.getElementById('preview').style.display = 'block';
+        }
+
+        function closePreview() {
+            document.getElementById('preview').style.display = 'none';
+        }
+
+        function startSlideshow() {
+            let index = 0;
+            if (photos.length === 0) return;
+            let slideshow = setInterval(() => {
+                openPreview(photos[index].src);
+                index = (index + 1) % photos.length;
+                if (index === 0) clearInterval(slideshow);
+            }, 2000);
+        }
+
+        document.getElementById('search').addEventListener('input', function() {
+            let query = this.value.toLowerCase();
+            let gallery = document.getElementById('photo-gallery');
+            gallery.innerHTML = '';
+            photos.filter(photo => photo.date.includes(query) || photo.location.toLowerCase().includes(query))
+                  .forEach(photo => {
+                      let img = document.createElement('img');
+                      img.src = photo.src;
+                      img.classList.add('photo');
+                      img.onclick = () => openPreview(photo.src);
+                      gallery.appendChild(img);
+                  });
+        });
+    </script>
+
+</body>
+</html>
