@@ -15,22 +15,39 @@
             gap: 10px;
             justify-content: center;
         }
+        .photo-container {
+            position: relative;
+            display: inline-block;
+            text-align: center;
+        }
         .photo {
             width: 150px;
             height: 150px;
             object-fit: cover;
             cursor: pointer;
         }
-        #preview {
+        .date-label {
+            display: block;
+            font-size: 12px;
+            color: gray;
+        }
+        #preview-container {
             display: none;
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: rgba(0, 0, 0, 0.8);
-            padding: 10px;
+            justify-content: center;
+            align-items: center;
         }
-        #preview img {
+        #preview-box {
+            background: white;
+            padding: 10px;
+            text-align: center;
+        }
+        #preview-img {
             max-width: 90vw;
             max-height: 90vh;
         }
@@ -46,48 +63,102 @@
     <input type="file" id="file-input" multiple accept="image/*">
     <button onclick="startSlideshow()">Start Slideshow</button>
     <input type="text" id="search" placeholder="Search by date or location">
-
+    
     <div id="photo-gallery"></div>
 
-    <div id="preview" onclick="closePreview()">
-        <img id="preview-img" src="" alt="Preview">
+    <div id="preview-container" onclick="closePreview(event)">
+        <div id="preview-box">
+            <img id="preview-img" src="" alt="Preview">
+            <p id="preview-date"></p>
+            <button onclick="grabImageUrl()">Grab URL</button>
+            <button onclick="saveImageToDevice()">Save to Device</button>
+        </div>
     </div>
 
     <script>
-        let photos = [];
+        let photos = JSON.parse(localStorage.getItem('photos')) || [];
+
+        function saveToLocalStorage() {
+            localStorage.setItem('photos', JSON.stringify(photos));
+        }
+
+        function loadPhotos() {
+            let gallery = document.getElementById('photo-gallery');
+            gallery.innerHTML = '';
+            photos.forEach(photo => addPhotoToGallery(photo));
+        }
 
         document.getElementById('file-input').addEventListener('change', function(event) {
             let files = event.target.files;
             for (let file of files) {
                 let reader = new FileReader();
                 reader.onload = function(e) {
-                    let img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.classList.add('photo');
-                    img.onclick = function() {
-                        openPreview(img.src);
+                    let photoData = {
+                        src: e.target.result,
+                        date: new Date().toLocaleDateString(),
+                        location: "Unknown"
                     };
-                    document.getElementById('photo-gallery').appendChild(img);
-                    photos.push({ src: img.src, date: new Date().toLocaleDateString(), location: "Unknown" });
+                    photos.push(photoData);
+                    saveToLocalStorage();
+                    addPhotoToGallery(photoData);
                 };
                 reader.readAsDataURL(file);
             }
         });
 
-        function openPreview(src) {
-            document.getElementById('preview-img').src = src;
-            document.getElementById('preview').style.display = 'block';
+        function addPhotoToGallery(photo) {
+            let container = document.createElement('div');
+            container.classList.add('photo-container');
+
+            let img = document.createElement('img');
+            img.src = photo.src;
+            img.classList.add('photo');
+            img.onclick = function() {
+                openPreview(photo.src, photo.date);
+            };
+
+            let dateLabel = document.createElement('span');
+            dateLabel.classList.add('date-label');
+            dateLabel.textContent = `Uploaded: ${photo.date}`;
+
+            container.appendChild(img);
+            container.appendChild(dateLabel);
+            document.getElementById('photo-gallery').appendChild(container);
         }
 
-        function closePreview() {
-            document.getElementById('preview').style.display = 'none';
+        function openPreview(src, date) {
+            document.getElementById('preview-img').src = src;
+            document.getElementById('preview-date').textContent = `Uploaded: ${date}`;
+            document.getElementById('preview-container').style.display = 'flex';
+        }
+
+        function closePreview(event) {
+            if (event.target.id === "preview-container") {
+                document.getElementById('preview-container').style.display = 'none';
+            }
+        }
+
+        function grabImageUrl() {
+            let url = document.getElementById('preview-img').src;
+            navigator.clipboard.writeText(url);
+            alert('Image URL copied to clipboard!');
+        }
+
+        function saveImageToDevice() {
+            let url = document.getElementById('preview-img').src;
+            let link = document.createElement('a');
+            link.href = url;
+            link.download = 'EchoPhoto.jpg';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         function startSlideshow() {
             let index = 0;
             if (photos.length === 0) return;
             let slideshow = setInterval(() => {
-                openPreview(photos[index].src);
+                openPreview(photos[index].src, photos[index].date);
                 index = (index + 1) % photos.length;
                 if (index === 0) clearInterval(slideshow);
             }, 2000);
@@ -98,14 +169,10 @@
             let gallery = document.getElementById('photo-gallery');
             gallery.innerHTML = '';
             photos.filter(photo => photo.date.includes(query) || photo.location.toLowerCase().includes(query))
-                  .forEach(photo => {
-                      let img = document.createElement('img');
-                      img.src = photo.src;
-                      img.classList.add('photo');
-                      img.onclick = () => openPreview(photo.src);
-                      gallery.appendChild(img);
-                  });
+                  .forEach(photo => addPhotoToGallery(photo));
         });
+
+        loadPhotos();
     </script>
 
 </body>
