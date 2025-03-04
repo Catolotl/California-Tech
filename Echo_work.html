@@ -150,6 +150,8 @@
         <!-- Search Bar -->
         <input type="text" id="searchInput" placeholder="Search tasks" oninput="filterTasks()" />
 
+        <button class="product-btn" onclick="downloadFile('Echo_docs')">Echo Docs</button>
+        
         <!-- Controls: Add Task Form -->
         <div class="controls">
             <input type="text" id="taskInput" placeholder="Enter task" />
@@ -168,6 +170,21 @@
     </div>
 
     <script>
+
+        function downloadFile(product) {
+      let fileName = '';
+      if (product === 'Echo_docs') {
+        fileName = 'Echo_docs.html'; // Normal Echo file
+      } else if (product === 'Echo_docs') {
+        fileName = 'Echo_docs.html'; // Echo Workspace file
+      }
+        const link = document.createElement('a');
+      link.href = `${fileName}`; // Replace with the correct path
+      link.download = fileName; // File name for download
+      link.click();
+    }
+
+        
         let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
 
         // Load tasks from local storage
