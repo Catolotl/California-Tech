@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echo Docs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            background-color: #f4f4f4;
+        }
+        .sidebar {
+            width: 250px;
+            background: #333;
+            color: white;
+            padding: 20px;
+            height: 100vh;
+            overflow-y: auto;
+            transition: transform 0.5s ease;
+            position: relative;
+        }
+        .hidden {
+            transform: translateX(-100%);
+        }
+        .sidebar h2 {
+            margin-top: 0;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar li {
+            padding: 8px;
+            cursor: pointer;
+            background: #444;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .sidebar li:hover {
+            background: #555;
+        }
+        .sidebar button {
+            margin: 8px;
+            padding: 5px;
+            background: rgb(39, 39, 39);
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .main {
+            flex-grow: 1;
+            padding: 20px;
+        }
+        .toolbar {
+            margin-bottom: 10px;
+        }
+        .editor {
+            width: 100%;
+            height: 80vh;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background: white;
+            outline: none;
+            overflow-y: auto;
+        }
+        .toggle-btn {
+            position: fixed;
+            top: 10px;
+            left: 300px;
+            background: #333;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: left 0.5s ease;
+            z-index: 1000;
+        }
+        .hidden + .toggle-btn {
+            left: 260px; /* Adjust this based on the width of the sidebar */
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar" id="sidebar">
+        <h2>Projects</h2>
+        <button onclick="newProject()">New Project</button>
+        <button onclick="saveProject()">Save Project</button>
+        <button onclick="deleteProject(currentProject)">Delete Project</button>
+        <button onclick="renameProjectPrompt()">Rename Project</button>
+        <ul id="projectList"></ul>
+    </div>
+    <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+    <div class="main">
+        <h1>Echo Docs</h1>
+        <div class="toolbar">
+            <select id="fontSize" onchange="changeFontSize(this.value)">
+                <option value="1px">1px</option>
+                <option value="4px">4px</option>
+                <option value="8px">8px</option>
+                <option value="12px">12px</option>
+                <option value="16px" selected>16px</option>
+                <option value="20px">20px</option>
+                <option value="24px">24px</option>
+                <option value="28px">28px</option>
+                <option value="32px">32px</option>
+                <option value="36px">36px</option>
+                <option value="40px">40px</option>
+            </select>
+            <input type="color" id="fontColor" onchange="changeFontColor(this.value)">
+            <button onclick="toggleBold()"><b>B</b></button>
+            <button onclick="toggleItalic()"><i>I</i></button>
+            <button onclick="toggleUnderline()"><u>U</u></button>
+        </div>
+        <div contenteditable="true" class="editor" id="editor"></div>
+    </div>
+    <script>
+const editor = document.getElementById("editor");
+const projectList = document.getElementById("projectList");
+const sidebar = document.getElementById("sidebar");
+const toggleBtn = document.querySelector(".toggle-btn");
+let currentProject = "Untitled";
+
+// Toggle sidebar visibility
+function toggleSidebar() {
+    sidebar.classList.toggle("hidden");
+    updateToggleButtonPosition();
+}
+
+// Update the position of the toggle button based on sidebar visibility
+function updateToggleButtonPosition() {
+    const sidebarWidth = sidebar.offsetWidth;
+    if (sidebar.classList.contains("hidden")) {
+        toggleBtn.style.left = '10px'; // Position when sidebar is hidden
+    } else {
+        toggleBtn.style.left = `${sidebarWidth + 10}px`; // Position when sidebar is visible
+    }
+}
+
+// Load the list of projects from localStorage
+function loadProjects() {
+    const projects = JSON.parse(localStorage.getItem("echo-projects")) || {};
+    projectList.innerHTML = "";
+    Object.keys(projects).forEach(project => {
+        const li = document.createElement("li");
+
+        const span = document.createElement("span");
+        span.textContent = project;
+
+        span.contentEditable = currentProject !== project;
+        span.onblur = () => renameProject(project, span.textContent);
+
+        const button = document.createElement("button");
+        button.textContent = "Open";
+        button.onclick = () => loadProject(project);
+
+        li.appendChild(span);
+        li.appendChild(button);
+        projectList.appendChild(li);
+    });
+}
+
+// Rename project
+function renameProject(oldName, newName) {
+    if (!newName || oldName === newName) return;
+    const projects = JSON.parse(localStorage.getItem("echo-projects")) || {};
+    projects[newName] = projects[oldName];
+    delete projects[oldName];
+    localStorage.setItem("echo-projects", JSON.stringify(projects));
+    loadProjects();
+}
+
+// Save project content and styles to localStorage
+function saveProject() {
+    if (!currentProject) return;
+    const projects = JSON.parse(localStorage.getItem("echo-projects")) || {};
+    const editorStyle = {
+        fontSize: editor.style.fontSize,
+        color: editor.style.color,
+        fontWeight: editor.style.fontWeight,
+        fontStyle: editor.style.fontStyle,
+        textDecoration: editor.style.textDecoration
+    };
+    projects[currentProject] = {
+        content: editor.innerHTML,
+        style: editorStyle
+    };
+    localStorage.setItem("echo-projects", JSON.stringify(projects));
+}
+
+// Create a new project
+function newProject() {
+    const name = prompt("Enter project name:", "Untitled");
+    if (name) {
+        currentProject = name;
+        editor.innerHTML = "";
+        saveProject();
+    }
+}
+
+// Load a specific project by name and apply its content and styles
+function loadProject(name) {
+    const projects = JSON.parse(localStorage.getItem("echo-projects")) || {};
+    currentProject = name;
+    const projectData = projects[name];
+    editor.innerHTML = projectData ? projectData.content : "";
+    if (projectData && projectData.style) {
+        applyEditorStyles(projectData.style);
+    }
+}
+
+// Delete a specific project
+function deleteProject(name) {
+    if (!name) return;
+    const projects = JSON.parse(localStorage.getItem("echo-projects")) || {};
+    delete projects[name];
+    localStorage.setItem("echo-projects", JSON.stringify(projects));
+    currentProject = "Untitled";
+    editor.innerHTML = "";
+    loadProjects();
+}
+
+// Apply saved styles to the editor
+function applyEditorStyles(styles) {
+    editor.style.fontSize = styles.fontSize || '16px';
+    editor.style.color = styles.color || '#000000';
+    editor.style.fontWeight = styles.fontWeight || 'normal';
+    editor.style.fontStyle = styles.fontStyle || 'normal';
+    editor.style.textDecoration = styles.textDecoration || 'none';
+}
+
+// Change font size
+function changeFontSize(size) {
+    editor.style.fontSize = size;
+}
+
+// Change font color
+function changeFontColor(color) {
+    editor.style.color = color;
+}
+
+// Toggle bold
+function toggleBold() {
+    document.execCommand("bold");
+}
+
+// Toggle italic
+function toggleItalic() {
+    document.execCommand("italic");
+}
+
+// Toggle underline
+function toggleUnderline() {
+    document.execCommand("underline");
+}
+
+// Listen for changes in the editor and save
+editor.addEventListener("input", saveProject);
+
+// Load projects initially
+loadProjects();
+
+    </script>
+</body>
+</html>
