@@ -93,6 +93,7 @@
         <button onclick="saveProject()">Save Project</button>
         <button onclick="deleteProject(currentProject)">Delete Project</button>
         <button onclick="renameProjectPrompt()">Rename Project</button>
+        <button onclick="downloadFile('Echo_work')">Echo Work</button>
         <ul id="projectList"></ul>
     </div>
     <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
@@ -120,6 +121,21 @@
         <div contenteditable="true" class="editor" id="editor"></div>
     </div>
     <script>
+
+            function downloadFile(product) {
+      let fileName = '';
+      if (product === 'Echo_work') {
+        fileName = 'Echo_work.html'; // Normal Echo file
+      } else if (product === 'Echo_work') {
+        fileName = 'Echo_work.html'; // Echo Workspace file
+      }
+      
+      const link = document.createElement('a');
+      link.href = `${fileName}`; // Replace with the correct path
+      link.download = fileName; // File name for download
+      link.click();
+    }
+        
 const editor = document.getElementById("editor");
 const projectList = document.getElementById("projectList");
 const sidebar = document.getElementById("sidebar");
